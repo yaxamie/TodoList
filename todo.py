@@ -23,6 +23,28 @@ def print_file():
                 print line,
 
 
+def swap_items(item1, item2):
+    global todo_txt_location
+
+    with open(todo_txt_location, 'r+') as _f:
+        all_lines = _f.readlines()
+
+        if item1 < 1 or item1 >= len(all_lines):
+            print "Error: first argument wasn't valid number"
+        elif item2 < 1 or item2 >= len(all_lines):
+            print "Error: second argument wasn't valid number"
+        else:
+            t = all_lines[item1]
+            all_lines[item1] = all_lines[item2]
+            all_lines[item2] = t
+
+            _f.seek(0)
+            _f.truncate()
+
+            for _idx, line in enumerate(all_lines):
+                _f.write(line)
+
+
 def remove_line(idx):
     global todo_txt_location
 
@@ -42,7 +64,9 @@ def main(args):
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-a", "--add", help="Add todo item", type=str, default='')
     arg_parser.add_argument("-r", "--remove", help="Remove a todo item by index.", type=int)
+    arg_parser.add_argument("-s", "--swap", help="Swap two items.",  nargs="*", type=int)
     arg_parser.add_argument("-l", "--list", help="List all the items.", action='store_true')
+
 
     # print help if no args provided
     if len(sys.argv) == 1:
@@ -60,6 +84,13 @@ def main(args):
             write_file.write(options.add+"\n")
 
         print_file()
+
+    if options.swap:
+        if len(options.swap) != 2:
+            print "Please have only 2 swap items."
+        else:
+            swap_items(options.swap[0], options.swap[1])
+            print_file()
 
     if options.remove:
         remove_line(options.remove)
